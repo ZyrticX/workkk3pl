@@ -22,40 +22,6 @@
       font-size: 32px;
       margin-bottom: 20px;
     }
-    .login-container {
-      max-width: 400px;
-      margin: 0 auto 30px;
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-    .login-container h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #003366;
-      font-weight: 700;
-    }
-    .login-container input {
-      display: block;
-      width: 100%;
-      margin-bottom: 15px;
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    .login-container button {
-      display: block;
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      background-color: #003366;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -77,35 +43,6 @@
       color: #fff;
       font-weight: 700;
     }
-    .device-info {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-    }
-    .device-info .device-name {
-      margin-left: 8px;
-      font-weight: 700;
-      color: #333;
-    }
-    .device-info .device-number {
-      font-weight: 700;
-      color: #333;
-    }
-    .status-not-done {
-      color: #ff3b30;
-      font-weight: 700;
-      font-size: 12px;
-    }
-    .status-not-needed {
-      color: #5856d6;
-      font-weight: 700;
-      font-size: 12px;
-    }
-    .status-completed {
-      color: #34c759;
-      font-weight: 700;
-      font-size: 12px;
-    }
     .nav-link {
       display: inline-block;
       padding: 10px 20px;
@@ -115,47 +52,12 @@
       border-radius: 4px;
       font-size: 14px;
     }
-    .loader {
-      display: none;
-      justify-content: center;
-      align-items: center;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-    }
-    .spinner {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #003366;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 2s linear infinite;
-    }
-    .loader-text {
-      color: #fff;
-      font-size: 16px;
-      margin-top: 20px;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
   </style>
 </head>
-<body onload="showLoader()">
+<body>
   <h1>פאנל אדמין - עדכון מכשירים</h1>
-  <div class="login-container">
-    <h2>התחברות למערכת</h2>
-    <input type="text" id="username" placeholder="שם משתמש">
-    <input type="password" id="password" placeholder="סיסמה">
-    <button onclick="login()">התחבר</button>
-  </div>
   
-  <table id="deviceTable" style="display: none;">
+  <table id="deviceTable">
     <thead>
       <tr>
         <th>מכשיר</th>
@@ -164,42 +66,92 @@
         <th>מטען ייחודי (C)</th>
         <th>מטען קיר (W)</th>
         <th>תיק (B)</th>
+        <th>ערוך</th>
       </tr>
     </thead>
     <tbody>
-      <!-- נוצר דינמית טבלת שורות -->
+      <!-- הטבלה מתעדכנת דינמית -->
     </tbody>
   </table>
-  <button id="updateButton" style="display: none;" onclick="updateData()">עדכן נתונים</button>
-  <a href="index.html" class="nav-link" onclick="showLoader()">חזרה לדף הבית</a>
 
-  <div id="loader" class="loader" style="display: none;">
-    <div class="spinner"></div>
-    <p class="loader-text">Be Happy. Smile. Believe.</p>
-  </div>
+  <button onclick="saveData()">שמור שינויים</button>
+
+  <a href="index.html" class="nav-link">חזרה לדף הבית</a>
 
   <script>
-    function login() {
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
+    // פונקציה לטעינת הנתונים מה-LocalStorage או מקובץ JSON
+    function loadDevices() {
+      let devices = JSON.parse(localStorage.getItem('devices')) || [];
 
-      // כאן תוכל להוסיף את הבדיקה של שם המשתמש והסיסמה
-      if (username === 'admin' && password === 'admin') {
-        // אם ההתחברות מוצלחת, הצג את הטבלה והכפתור
-        document.getElementsByClassName('login-container')[0].style.display = 'none';
-        document.getElementById('deviceTable').style.display = 'table';
-        document.getElementById('updateButton').style.display = 'block';
-
-        // טען את הנתונים לטבלה
-        fillDeviceTable();
+      if (devices.length === 0) {
+        fetch('data.json') // במידה ואין ב-LocalStorage, מושך מ-data.json
+          .then(response => response.json())
+          .then(data => {
+            devices = data.devices;
+            localStorage.setItem('devices', JSON.stringify(devices));
+            fillTable(devices);
+          })
+          .catch(error => console.error('Error loading data:', error));
       } else {
-        alert('שם משתמש או סיסמה שגויים. נסה שוב.');
+        fillTable(devices);
       }
     }
 
-    function fillDeviceTable() {
-      // קוד לטעינת הנתונים לטבלה
+    // יצירת הטבלה עם אפשרות עריכה
+    function fillTable(devices) {
+      const tableBody = document.querySelector('#deviceTable tbody');
+      tableBody.innerHTML = ''; // נקה את התוכן הקיים בטבלה
+
+      devices.forEach((device, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${device.name}</td>
+          <td><input type="checkbox" ${device.remote ? 'checked' : ''} data-index="${index}" data-key="remote"></td>
+          <td><input type="checkbox" ${device.accessories.length > 0 ? 'checked' : ''} data-index="${index}" data-key="accessories"></td>
+          <td><input type="checkbox" ${device.customCharger ? 'checked' : ''} data-index="${index}" data-key="customCharger"></td>
+          <td><input type="checkbox" ${device.wallCharger ? 'checked' : ''} data-index="${index}" data-key="wallCharger"></td>
+          <td><input type="checkbox" ${device.bag ? 'checked' : ''} data-index="${index}" data-key="bag"></td>
+          <td><button onclick="editDevice(${index})">ערוך</button></td>
+        `;
+        tableBody.appendChild(row);
+      });
     }
+
+    // פונקציה לעדכון הנתונים ב-localStorage כאשר המשתמש משנה ערכים
+    function saveData() {
+      const devices = JSON.parse(localStorage.getItem('devices')) || [];
+
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(checkbox => {
+        const index = checkbox.getAttribute('data-index');
+        const key = checkbox.getAttribute('data-key');
+
+        if (key === 'accessories') {
+          devices[index].accessories = checkbox.checked ? ['אביזר'] : [];
+        } else {
+          devices[index][key] = checkbox.checked;
+        }
+      });
+
+      localStorage.setItem('devices', JSON.stringify(devices));
+      alert('הנתונים נשמרו בהצלחה!');
+    }
+
+    // פונקציה לעריכת פריט ספציפי (ניתן להרחיב אותה לפי הצורך)
+    function editDevice(index) {
+      const devices = JSON.parse(localStorage.getItem('devices')) || [];
+      const device = devices[index];
+      const newName = prompt('ערוך את שם המכשיר:', device.name);
+
+      if (newName) {
+        devices[index].name = newName;
+        localStorage.setItem('devices', JSON.stringify(devices));
+        loadDevices(); // טען מחדש את הטבלה
+      }
+    }
+
+    // טוען את הטבלה עם הנתונים בעת טעינת הדף
+    window.onload = loadDevices;
   </script>
 </body>
 </html>
