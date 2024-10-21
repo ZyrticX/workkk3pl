@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>פאנל צפייה - מכשירים</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=San+Francisco:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* קוד הסגנון כמו בדוגמה הקודמת */
+  </style>
+</head>
+<body onload="showLoader()">
+  <h1>פאנל צפייה - מכשירים</h1>
+  <table id="deviceTable">
+    <thead>
+      <tr>
+        <th>מכשיר</th>
+        <th>שלט (R)</th>
+        <th>אביזרים נלווים (A)</th>
+        <th>מטען ייחודי (C)</th>
+        <th>מטען קיר (W)</th>
+        <th>תיק (B)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- נוצר דינמית טבלת שורות -->
+    </tbody>
+  </table>
+  <a href="index.html" class="nav-link" onclick="showLoader()">חזרה לדף הבית</a>
+  <a href="admin_panel.html" class="nav-link" onclick="showLoader()">עדכון מכשירים</a>
+
+  <div id="loader" class="loader" style="display: none;">
+    <div class="spinner"></div>
+    <p class="loader-text">Be Happy. Smile. Believe.</p>
+  </div>
+
+  <script>
+    fetch('data.json')
+      .then(response => response.json())
+      .then(data => {
+        const tableBody = document.getElementById('deviceTable').getElementsByTagName('tbody')[0];
+
+        data.devices.forEach(device => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>
+              <div class="device-info">
+                <i class="device-icon">&#x1F4FA;</i>
+                <span class="device-name">${device.name}</span>
+                <span class="device-number">${device.id}.</span>
+              </div>
+            </td>
+            <td>${device.remote ? '<i class="remote-icon">&#x1F4F1;</i>' : '<i class="remote-icon">&#x274C;</i>'}</td>
+            <td>${device.customCharger ? '<i class="charger-icon">&#x1F50C;</i>' : '<i class="charger-icon">&#x274C;</i>'}</td>
+            <td>${device.accessories.length > 0 ? '<i class="accessories-icon">&#x1F4A8;</i> אביזרים' : '<i class="accessories-icon">&#x274C;</i>'}</td>
+            <td>${device.wallCharger ? '<i class="charger-icon">&#x1F50C;</i>' : '<i class="charger-icon">&#x274C;</i>'}</td>
+            <td>${device.bag ? '<i class="accessories-icon">&#x1F4E6;</i>' : '<i class="accessories-icon">&#x274C;</i>'}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      })
+      .catch(error => console.error(error));
+  </script>
+</body>
+</html>
