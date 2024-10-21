@@ -88,6 +88,14 @@
           .then(response => response.json())
           .then(data => {
             devices = data.devices;
+            devices.forEach(device => { 
+              // ברירת מחדל לכל ערך היא "לא בוצע"
+              device.remote = 'לא בוצע';
+              device.customCharger = 'לא בוצע';
+              device.wallCharger = 'לא בוצע';
+              device.bag = 'לא בוצע';
+              device.accessories = [];
+            });
             localStorage.setItem('devices', JSON.stringify(devices));
             fillTable(devices);
           })
@@ -121,16 +129,9 @@
     function createSelectElement(value, index, key) {
       const options = ['לא בוצע', 'בוצע', 'אין'];
       const select = `<select data-index="${index}" data-key="${key}">
-        ${options.map(option => `<option value="${option}" ${option === getOptionValue(value) ? 'selected' : ''}>${option}</option>`).join('')}
+        ${options.map(option => `<option value="${option}" ${option === value ? 'selected' : ''}>${option}</option>`).join('')}
       </select>`;
       return select;
-    }
-
-    // ממיר ערך בוליאני או מערך לערך המתאים (בוצע, לא בוצע, אין)
-    function getOptionValue(value) {
-      if (value === true || value === 'בוצע') return 'בוצע';
-      if (value === false || value === 'אין') return 'אין';
-      return 'לא בוצע';
     }
 
     // פונקציה לעדכון הנתונים ב-localStorage כאשר המשתמש משנה ערכים
@@ -146,7 +147,7 @@
         if (key === 'accessories') {
           devices[index].accessories = value === 'בוצע' ? ['אביזר'] : [];
         } else {
-          devices[index][key] = value === 'בוצע' ? true : (value === 'אין' ? false : 'לא בוצע');
+          devices[index][key] = value;
         }
       });
 
