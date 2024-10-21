@@ -1,0 +1,103 @@
+{
+    "devices": [
+      {
+        "id": 1,
+        "name": "טלוויזיה",
+        "remote": false,
+        "customCharger": false,
+        "wallCharger": false,
+        "accessories": [],
+        "bag": false
+      },
+      {
+        "id": 2,
+        "name": "מזגן",
+        "remote": false,
+        "customCharger": false,
+        "wallCharger": false,
+        "accessories": [],
+        "bag": false
+      },
+      {
+        "id": 3,
+        "name": "ממיר",
+        "remote": false,
+        "customCharger": false,
+        "wallCharger": false,
+        "accessories": [],
+        "bag": false
+      },
+      {
+        "id": 4,
+        "name": "בובת אסטרונאוט עם לייזר",
+        "remote": false,
+        "customCharger": false,
+        "wallCharger": false,
+        "accessories": [],
+        "bag": false
+      },
+      {
+        "id": 5,
+        "name": "מתקן אורות גלקסיה",
+        "remote": false,
+        "customCharger": false,
+        "wallCharger": false,
+        "accessories": [],
+        "bag": false
+      },
+      {
+        "id": 6,
+        "name": "מחשב נייד",
+        "remote": false,
+        "customCharger": false,
+        "wallCharger": false,
+        "accessories": [],
+        "bag": false
+      },
+      {
+        "id": 7,
+        "name": "טאבלט",
+        "remote": false,
+        "customCharger": false,
+        "wallCharger": false,
+        "accessories": [],
+        "bag": false
+      },
+      {
+        "id": 8,
+        "name": "משאבת אינסולין",
+        "remote": false,
+        "customCharger": false,
+        "wallCharger": false,
+        "accessories": [],
+        "bag": false
+      },
+      {
+        "id": 9,
+        "name": "רמקול נייד",
+        "remote": false,
+        "customCharger": false,
+        "wallCharger": false,
+        "accessories": [],
+        "bag": false
+      },
+      {
+        "id": 10,
+        "name": "טלפון אישי",
+        "remote": false,
+        "customCharger": false,
+        "wallCharger": false,
+        "accessories": [],
+        "bag": false
+      },
+      {
+        "id": 11,
+        "name": "טלפון עבודה",
+        "remote": false,
+        "customCharger": false,
+        "wallCharger": false,
+        "accessories": [],
+        "bag": false
+      }
+    ]
+  }
