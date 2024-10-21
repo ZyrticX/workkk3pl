@@ -106,30 +106,47 @@
         const row = document.createElement('tr');
         row.innerHTML = `
           <td>${device.name}</td>
-          <td><input type="checkbox" ${device.remote ? 'checked' : ''} data-index="${index}" data-key="remote"></td>
-          <td><input type="checkbox" ${device.accessories.length > 0 ? 'checked' : ''} data-index="${index}" data-key="accessories"></td>
-          <td><input type="checkbox" ${device.customCharger ? 'checked' : ''} data-index="${index}" data-key="customCharger"></td>
-          <td><input type="checkbox" ${device.wallCharger ? 'checked' : ''} data-index="${index}" data-key="wallCharger"></td>
-          <td><input type="checkbox" ${device.bag ? 'checked' : ''} data-index="${index}" data-key="bag"></td>
+          <td>${createSelectElement(device.remote, index, 'remote')}</td>
+          <td>${createSelectElement(device.accessories.length > 0 ? 'בוצע' : 'לא בוצע', index, 'accessories')}</td>
+          <td>${createSelectElement(device.customCharger, index, 'customCharger')}</td>
+          <td>${createSelectElement(device.wallCharger, index, 'wallCharger')}</td>
+          <td>${createSelectElement(device.bag, index, 'bag')}</td>
           <td><button onclick="editDevice(${index})">ערוך</button></td>
         `;
         tableBody.appendChild(row);
       });
     }
 
+    // יצירת select עם 3 אפשרויות (לא בוצע, בוצע, אין)
+    function createSelectElement(value, index, key) {
+      const options = ['לא בוצע', 'בוצע', 'אין'];
+      const select = `<select data-index="${index}" data-key="${key}">
+        ${options.map(option => `<option value="${option}" ${option === getOptionValue(value) ? 'selected' : ''}>${option}</option>`).join('')}
+      </select>`;
+      return select;
+    }
+
+    // ממיר ערך בוליאני או מערך לערך המתאים (בוצע, לא בוצע, אין)
+    function getOptionValue(value) {
+      if (value === true || value === 'בוצע') return 'בוצע';
+      if (value === false || value === 'אין') return 'אין';
+      return 'לא בוצע';
+    }
+
     // פונקציה לעדכון הנתונים ב-localStorage כאשר המשתמש משנה ערכים
     function saveData() {
       const devices = JSON.parse(localStorage.getItem('devices')) || [];
 
-      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-      checkboxes.forEach(checkbox => {
-        const index = checkbox.getAttribute('data-index');
-        const key = checkbox.getAttribute('data-key');
+      const selects = document.querySelectorAll('select');
+      selects.forEach(select => {
+        const index = select.getAttribute('data-index');
+        const key = select.getAttribute('data-key');
+        const value = select.value;
 
         if (key === 'accessories') {
-          devices[index].accessories = checkbox.checked ? ['אביזר'] : [];
+          devices[index].accessories = value === 'בוצע' ? ['אביזר'] : [];
         } else {
-          devices[index][key] = checkbox.checked;
+          devices[index][key] = value === 'בוצע' ? true : (value === 'אין' ? false : 'לא בוצע');
         }
       });
 
