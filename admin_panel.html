@@ -86,6 +86,24 @@
       border-radius: 4px;
       font-size: 14px;
     }
+    .add-column {
+      margin-bottom: 20px;
+      text-align: right;
+    }
+    .add-column input {
+      padding: 8px;
+      margin-right: 10px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    .add-column button {
+      padding: 10px 20px;
+      background-color: #003366;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -99,6 +117,12 @@
     <button onclick="login()">התחבר</button>
   </div>
 
+  <!-- אפשרות להוסיף עמודה חדשה -->
+  <div class="add-column" id="addColumnSection" style="display: none;">
+    <input type="text" id="newColumnName" placeholder="הכנס שם עמודה חדשה">
+    <button onclick="addNewColumn()">הוסף עמודה</button>
+  </div>
+
   <!-- טבלה - מוצגת רק אחרי התחברות מוצלחת -->
   <table id="deviceTable" style="display: none;">
     <thead>
@@ -109,6 +133,7 @@
         <th>מטען ייחודי (C)</th>
         <th>מטען קיר (W)</th>
         <th>תיק (B)</th>
+        <th>דגם</th>
         <th>ערוך</th>
       </tr>
     </thead>
@@ -128,6 +153,8 @@
       { username: 'mae', password: '2003' }
     ];
 
+    let additionalColumns = [];
+
     function login() {
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
@@ -140,6 +167,7 @@
         document.getElementById('deviceTable').style.display = 'table'; // הצגת הטבלה
         document.getElementById('saveButton').style.display = 'inline-block'; // הצגת כפתור השמירה
         document.getElementById('backButton').style.display = 'inline-block'; // הצגת כפתור החזרה
+        document.getElementById('addColumnSection').style.display = 'block'; // הצגת אופציה להוספת עמודה
         loadDevices(); // טען את הנתונים לטבלה
       } else {
         alert('שם משתמש או סיסמה שגויים');
@@ -162,6 +190,7 @@
               device.wallCharger = 'לא בוצע';
               device.bag = 'לא בוצע';
               device.accessories = [];
+              device.model = ''; // דגם
             });
             localStorage.setItem('devices', JSON.stringify(devices));
             fillTable(devices);
@@ -186,9 +215,23 @@
           <td>${createSelectElement(device.customCharger, index, 'customCharger')}</td>
           <td>${createSelectElement(device.wallCharger, index, 'wallCharger')}</td>
           <td>${createSelectElement(device.bag, index, 'bag')}</td>
+          <td><input type="text" value="${device.model}" data-index="${index}" data-key="model"></td>
           <td><button onclick="editDevice(${index})">ערוך</button></td>
         `;
         tableBody.appendChild(row);
+      });
+
+      // הוספת עמודות חדשות אם קיימות
+      additionalColumns.forEach(col => {
+        const th = document.createElement('th');
+        th.textContent = col;
+        document.querySelector('#deviceTable thead tr').appendChild(th);
+
+        devices.forEach((device, index) => {
+          const td = document.createElement('td');
+          td.innerHTML = `<input type="text" data-index="${index}" data-key="${col}">`;
+          tableBody.rows[index].appendChild(td);
+        });
       });
     }
 
@@ -205,11 +248,11 @@
     function saveData() {
       const devices = JSON.parse(localStorage.getItem('devices')) || [];
 
-      const selects = document.querySelectorAll('select');
-      selects.forEach(select => {
-        const index = select.getAttribute('data-index');
-        const key = select.getAttribute('data-key');
-        const value = select.value;
+      const inputs = document.querySelectorAll('input, select');
+      inputs.forEach(input => {
+        const index = input.getAttribute('data-index');
+        const key = input.getAttribute('data-key');
+        const value = input.value;
 
         if (key === 'accessories') {
           devices[index].accessories = value === 'בוצע' ? ['אביזר'] : [];
@@ -220,6 +263,15 @@
 
       localStorage.setItem('devices', JSON.stringify(devices));
       alert('הנתונים נשמרו בהצלחה!');
+    }
+
+    // פונקציה להוספת עמודה חדשה
+    function addNewColumn() {
+      const newColumnName = document.getElementById('newColumnName').value;
+      if (newColumnName) {
+        additionalColumns.push(newColumnName);
+        loadDevices(); // עדכן את הטבלה עם העמודה החדשה
+      }
     }
 
     // פונקציה לעריכת פריט ספציפי (ניתן להרחיב אותה לפי הצורך)
