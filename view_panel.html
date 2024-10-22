@@ -113,7 +113,7 @@
     }
   </style>
 </head>
-<body onload="showLoader()">
+<body>
   <h1>פאנל צפייה - מכשירים</h1>
   <table id="deviceTable">
     <thead>
@@ -130,8 +130,8 @@
       <!-- נוצר דינמית טבלת שורות -->
     </tbody>
   </table>
-  <a href="index.html" class="nav-link" onclick="showLoader()">חזרה לדף הבית</a>
-  <a href="admin_panel.html" class="nav-link" onclick="showLoader()">עדכון מכשירים</a>
+  <a href="index.html" class="nav-link">חזרה לדף הבית</a>
+  <a href="admin_panel.html" class="nav-link">עדכון מכשירים</a>
 
   <div id="loader" class="loader" style="display: none;">
     <div class="spinner"></div>
@@ -139,31 +139,45 @@
   </div>
 
   <script>
-    fetch('data.json')
-      .then(response => response.json())
-      .then(data => {
-        const tableBody = document.getElementById('deviceTable').getElementsByTagName('tbody')[0];
+    function loadDevices() {
+      let devices = JSON.parse(localStorage.getItem('devices')) || [];
 
-        data.devices.forEach(device => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>
-              <div class="device-info">
-                <i class="device-icon">&#x1F4FA;</i>
-                <span class="device-name">${device.name}</span>
-                <span class="device-number">${device.id}.</span>
-              </div>
-            </td>
-            <td>${device.remote ? '<i class="remote-icon">&#x1F4F1;</i>' : '<i class="remote-icon">&#x274C;</i>'}</td>
-            <td>${device.customCharger ? '<i class="charger-icon">&#x1F50C;</i>' : '<i class="charger-icon">&#x274C;</i>'}</td>
-            <td>${device.accessories.length > 0 ? '<i class="accessories-icon">&#x1F4A8;</i> אביזרים' : '<i class="accessories-icon">&#x274C;</i>'}</td>
-            <td>${device.wallCharger ? '<i class="charger-icon">&#x1F50C;</i>' : '<i class="charger-icon">&#x274C;</i>'}</td>
-            <td>${device.bag ? '<i class="accessories-icon">&#x1F4E6;</i>' : '<i class="accessories-icon">&#x274C;</i>'}</td>
-          `;
-          tableBody.appendChild(row);
-        });
-      })
-      .catch(error => console.error(error));
+      if (devices.length === 0) {
+        fetch('data.json')
+          .then(response => response.json())
+          .then(data => {
+            devices = data.devices;
+            displayDevices(devices);
+          })
+          .catch(error => console.error('Error loading data:', error));
+      } else {
+        displayDevices(devices);
+      }
+    }
+
+    function displayDevices(devices) {
+      const tableBody = document.getElementById('deviceTable').getElementsByTagName('tbody')[0];
+
+      devices.forEach(device => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>
+            <div class="device-info">
+              <span class="device-name">${device.name}</span>
+              <span class="device-number">${device.id}.</span>
+            </div>
+          </td>
+          <td>${device.remote === 'בוצע' ? '✔️' : (device.remote === 'אין' ? '❌' : '🔄')}</td>
+          <td>${device.accessories.length > 0 ? '✔️' : '❌'}</td>
+          <td>${device.customCharger === 'בוצע' ? '✔️' : (device.customCharger === 'אין' ? '❌' : '🔄')}</td>
+          <td>${device.wallCharger === 'בוצע' ? '✔️' : (device.wallCharger === 'אין' ? '❌' : '🔄')}</td>
+          <td>${device.bag === 'בוצע' ? '✔️' : (device.bag === 'אין' ? '❌' : '🔄')}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    window.onload = loadDevices;
   </script>
 </body>
 </html>
