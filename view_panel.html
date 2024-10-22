@@ -43,20 +43,6 @@
       color: #fff;
       font-weight: 700;
     }
-    .device-info {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-    }
-    .device-info .device-name {
-      margin-left: 8px;
-      font-weight: 700;
-      color: #333;
-    }
-    .device-info .device-number {
-      font-weight: 700;
-      color: #333;
-    }
     .status-completed {
       font-family: 'Tahoma', sans-serif;
       font-size: 6px;
@@ -73,7 +59,7 @@
       font-family: 'Tahoma', sans-serif;
       font-size: 6px;
       font-weight: bold;
-      color: #5856d6; /* סגול */
+      color: #5856d6; /* סגול כהה */
     }
     .bold-black {
       font-weight: bold;
@@ -187,11 +173,11 @@
 
     function displayStatus(status, category, index) {
       if (status === 'בוצע') {
-        return `<span class="bold-black">בוצע (${category}${index + 1})</span>`;
+        return `<span class="status-completed">בוצע (${category}${index + 1})</span>`;
       } else if (status === 'אין') {
         return `<span class="status-not-needed">אין</span>`;
       } else {
-        return `<span class="status-not-done">------</span>`;
+        return `<span class="status-not-done">——</span>`;
       }
     }
 
