@@ -57,20 +57,27 @@
       font-weight: 700;
       color: #333;
     }
+    .status-completed {
+      font-family: 'Tahoma', sans-serif;
+      font-size: 6px;
+      font-weight: bold;
+      color: #34c759; /* ירוק */
+    }
     .status-not-done {
-      color: #ff3b30;
-      font-weight: 700;
-      font-size: 12px;
+      font-family: 'Tahoma', sans-serif;
+      font-size: 6px;
+      font-weight: bold;
+      color: #ff3b30; /* אדום */
     }
     .status-not-needed {
-      color: #5856d6;
-      font-weight: 700;
-      font-size: 12px;
+      font-family: 'Tahoma', sans-serif;
+      font-size: 6px;
+      font-weight: bold;
+      color: #5856d6; /* סגול */
     }
-    .status-completed {
-      color: #34c759;
-      font-weight: 700;
-      font-size: 12px;
+    .bold-black {
+      font-weight: bold;
+      color: #000; /* שחור */
     }
     .nav-link {
       display: inline-block;
@@ -100,7 +107,7 @@
       border-radius: 50%;
       width: 30px;
       height: 30px;
-      animation: spin 2s linear infinite;
+      animation: spin 4s linear infinite;
     }
     .loader-text {
       color: #fff;
@@ -133,9 +140,9 @@
   <a href="index.html" class="nav-link">חזרה לדף הבית</a>
   <a href="admin_panel.html" class="nav-link">עדכון מכשירים</a>
 
-  <div id="loader" class="loader" style="display: none;">
+  <div id="loader" class="loader">
     <div class="spinner"></div>
-    <p class="loader-text">Be Happy. Smile. Believe.</p>
+    <p class="loader-text">Be Happy. Smile. Believe. Username: תמיד לחייך!</p>
   </div>
 
   <script>
@@ -157,8 +164,9 @@
 
     function displayDevices(devices) {
       const tableBody = document.getElementById('deviceTable').getElementsByTagName('tbody')[0];
+      tableBody.innerHTML = ''; // נקה את התוכן הקיים בטבלה
 
-      devices.forEach(device => {
+      devices.forEach((device, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
           <td>
@@ -167,17 +175,33 @@
               <span class="device-number">${device.id}.</span>
             </div>
           </td>
-          <td>${device.remote === 'בוצע' ? '✔️' : (device.remote === 'אין' ? '❌' : '🔄')}</td>
-          <td>${device.accessories.length > 0 ? '✔️' : '❌'}</td>
-          <td>${device.customCharger === 'בוצע' ? '✔️' : (device.customCharger === 'אין' ? '❌' : '🔄')}</td>
-          <td>${device.wallCharger === 'בוצע' ? '✔️' : (device.wallCharger === 'אין' ? '❌' : '🔄')}</td>
-          <td>${device.bag === 'בוצע' ? '✔️' : (device.bag === 'אין' ? '❌' : '🔄')}</td>
+          <td>${displayStatus(device.remote, 'R', index)}</td>
+          <td>${displayStatus(device.accessories.length > 0 ? 'בוצע' : 'לא בוצע', 'A', index)}</td>
+          <td>${displayStatus(device.customCharger, 'C', index)}</td>
+          <td>${displayStatus(device.wallCharger, 'W', index)}</td>
+          <td>${displayStatus(device.bag, 'B', index)}</td>
         `;
         tableBody.appendChild(row);
       });
     }
 
-    window.onload = loadDevices;
+    function displayStatus(status, category, index) {
+      if (status === 'בוצע') {
+        return `<span class="bold-black">בוצע (${category}${index + 1})</span>`;
+      } else if (status === 'אין') {
+        return `<span class="status-not-needed">אין</span>`;
+      } else {
+        return `<span class="status-not-done">לא בוצע</span>`;
+      }
+    }
+
+    window.onload = function() {
+      document.getElementById('loader').style.display = 'flex';
+      setTimeout(() => {
+        document.getElementById('loader').style.display = 'none';
+        loadDevices();
+      }, 4000); // הארכת זמן הטעינה ל-4 שניות
+    }
   </script>
 </body>
 </html>
