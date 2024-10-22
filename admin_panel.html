@@ -212,3 +212,31 @@
         const value = select.value;
 
         if (key === 'accessories') {
+          devices[index].accessories = value === 'בוצע' ? ['אביזר'] : [];
+        } else {
+          devices[index][key] = value;
+        }
+      });
+
+      localStorage.setItem('devices', JSON.stringify(devices));
+      alert('הנתונים נשמרו בהצלחה!');
+    }
+
+    // פונקציה לעריכת פריט ספציפי (ניתן להרחיב אותה לפי הצורך)
+    function editDevice(index) {
+      const devices = JSON.parse(localStorage.getItem('devices')) || [];
+      const device = devices[index];
+      const newName = prompt('ערוך את שם המכשיר:', device.name);
+
+      if (newName) {
+        devices[index].name = newName;
+        localStorage.setItem('devices', JSON.stringify(devices));
+        loadDevices(); // טען מחדש את הטבלה
+      }
+    }
+
+    // טוען את הטבלה עם הנתונים בעת טעינת הדף
+    window.onload = loadDevices;
+  </script>
+</body>
+</html>
