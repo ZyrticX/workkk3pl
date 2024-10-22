@@ -122,12 +122,20 @@
   <a href="index.html" class="nav-link" id="backButton" style="display: none;">חזרה לדף הבית</a>
 
   <script>
+    // מערך של משתמשים וסיסמאות
+    const users = [
+      { username: 'evgeniy', password: '2000' },
+      { username: 'mae', password: '2003' }
+    ];
+
     function login() {
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
 
-      // תנאים לבדוק את שם המשתמש והסיסמה
-      if ((username === 'evgeniy' || username === 'mae') && password === '2024') {
+      // חיפוש משתמש לפי שם משתמש וסיסמה
+      const user = users.find(user => user.username === username && user.password === password);
+
+      if (user) {
         document.getElementById('loginContainer').style.display = 'none'; // הסתרת מסך ההתחברות
         document.getElementById('deviceTable').style.display = 'table'; // הצגת הטבלה
         document.getElementById('saveButton').style.display = 'inline-block'; // הצגת כפתור השמירה
@@ -204,31 +212,3 @@
         const value = select.value;
 
         if (key === 'accessories') {
-          devices[index].accessories = value === 'בוצע' ? ['אביזר'] : [];
-        } else {
-          devices[index][key] = value;
-        }
-      });
-
-      localStorage.setItem('devices', JSON.stringify(devices));
-      alert('הנתונים נשמרו בהצלחה!');
-    }
-
-    // פונקציה לעריכת פריט ספציפי (ניתן להרחיב אותה לפי הצורך)
-    function editDevice(index) {
-      const devices = JSON.parse(localStorage.getItem('devices')) || [];
-      const device = devices[index];
-      const newName = prompt('ערוך את שם המכשיר:', device.name);
-
-      if (newName) {
-        devices[index].name = newName;
-        localStorage.setItem('devices', JSON.stringify(devices));
-        loadDevices(); // טען מחדש את הטבלה
-      }
-    }
-
-    // טוען את הטבלה עם הנתונים בעת טעינת הדף
-    window.onload = loadDevices;
-  </script>
-</body>
-</html>
