@@ -22,6 +22,40 @@
       font-size: 32px;
       margin-bottom: 20px;
     }
+    .login-container {
+      max-width: 400px;
+      margin: 0 auto 30px;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #003366;
+      font-weight: 700;
+    }
+    .login-container input {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .login-container button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #003366;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -56,8 +90,17 @@
 </head>
 <body>
   <h1>פאנל אדמין - עדכון מכשירים</h1>
-  
-  <table id="deviceTable">
+
+  <!-- מסך התחברות -->
+  <div class="login-container" id="loginContainer">
+    <h2>התחברות למערכת</h2>
+    <input type="text" id="username" placeholder="שם משתמש">
+    <input type="password" id="password" placeholder="סיסמה">
+    <button onclick="login()">התחבר</button>
+  </div>
+
+  <!-- טבלה - מוצגת רק אחרי התחברות מוצלחת -->
+  <table id="deviceTable" style="display: none;">
     <thead>
       <tr>
         <th>מכשיר</th>
@@ -74,11 +117,27 @@
     </tbody>
   </table>
 
-  <button onclick="saveData()">שמור שינויים</button>
+  <button id="saveButton" style="display: none;" onclick="saveData()">שמור שינויים</button>
 
-  <a href="index.html" class="nav-link">חזרה לדף הבית</a>
+  <a href="index.html" class="nav-link" id="backButton" style="display: none;">חזרה לדף הבית</a>
 
   <script>
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      // תנאים לבדוק את שם המשתמש והסיסמה
+      if ((username === 'evgeniy' || username === 'mae') && password === '2024') {
+        document.getElementById('loginContainer').style.display = 'none'; // הסתרת מסך ההתחברות
+        document.getElementById('deviceTable').style.display = 'table'; // הצגת הטבלה
+        document.getElementById('saveButton').style.display = 'inline-block'; // הצגת כפתור השמירה
+        document.getElementById('backButton').style.display = 'inline-block'; // הצגת כפתור החזרה
+        loadDevices(); // טען את הנתונים לטבלה
+      } else {
+        alert('שם משתמש או סיסמה שגויים');
+      }
+    }
+
     // פונקציה לטעינת הנתונים מה-LocalStorage או מקובץ JSON
     function loadDevices() {
       let devices = JSON.parse(localStorage.getItem('devices')) || [];
