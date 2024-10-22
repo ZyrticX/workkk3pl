@@ -27,15 +27,38 @@
       background-color: #ddd;
       margin: 0 auto 20px;
       border-radius: 4px;
+      height: 30px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
     .progress {
-      height: 30px;
-      background-color: #003366;
+      height: 100%;
+      background-color: #34c759;
       text-align: center;
       line-height: 30px;
       border-radius: 4px;
       color: #fff;
       font-weight: 700;
+      transition: width 0.3s;
+    }
+    .summary {
+      margin-top: 20px;
+      font-family: 'Tahoma', sans-serif;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .summary span {
+      display: block;
+      margin-bottom: 10px;
+    }
+    .completed {
+      color: #34c759; /* ירוק */
+    }
+    .not-done {
+      color: #ff3b30; /* אדום */
+    }
+    .no-needed {
+      color: #5856d6; /* סגול כהה */
     }
     .welcome {
       color: #333;
@@ -99,15 +122,21 @@
 <body>
   <h1>מערכת ניהול מכשירים</h1>
   <div class="progress-container">
-    <div class="progress" id="progressBar">0/0 (0%)</div>
+    <div class="progress" id="progressBar">0%</div>
   </div>
+  <div class="summary">
+    <span class="completed" id="completedText">בוצע: 0</span>
+    <span class="no-needed" id="noNeededText">אין: 0</span>
+    <span class="not-done" id="notDoneText">——: 0</span>
+  </div>
+
   <p class="welcome">ברוכים הבאים למערכת ניהול המכשירים!</p>
   <p class="stay-focused">STAY FOCUSED.</p>
   <div class="buttons">
     <a href="admin_panel.html" onclick="showLoader()">פאנל אדמין</a>
     <a href="view_panel.html" onclick="showLoader()">פאנל צפייה</a>
   </div>
-  
+
   <div id="loader" class="loader" style="display: none;">
     <div class="spinner"></div>
     <p class="loader-text">Be Happy. Smile. Believe.</p>
@@ -116,21 +145,45 @@
   <script>
     function updateProgressBar() {
       const progressBar = document.getElementById('progressBar');
-      let totalDevices = 0;
+      const completedText = document.getElementById('completedText');
+      const noNeededText = document.getElementById('noNeededText');
+      const notDoneText = document.getElementById('notDoneText');
+      
+      let totalDevices = 55; // סך הכל 55 אופציות
       let completedDevices = 0;
+      let noNeededDevices = 0;
+      let notDoneDevices = 0;
 
       // טען את הנתונים מקובץ data.json
       fetch('data.json')
         .then(response => response.json())
         .then(data => {
-          totalDevices = data.devices.length;
           data.devices.forEach(device => {
-            if (device.remote && device.customCharger && device.accessories.length > 0 && device.wallCharger && device.bag) {
-              completedDevices++;
-            }
+            // בדיקה של כל פריט בטבלה, אם בוצע או לא
+            if (device.remote === 'בוצע') completedDevices++;
+            if (device.remote === 'אין') noNeededDevices++;
+            if (device.remote === 'לא בוצע') notDoneDevices++;
+            if (device.customCharger === 'בוצע') completedDevices++;
+            if (device.customCharger === 'אין') noNeededDevices++;
+            if (device.customCharger === 'לא בוצע') notDoneDevices++;
+            if (device.wallCharger === 'בוצע') completedDevices++;
+            if (device.wallCharger === 'אין') noNeededDevices++;
+            if (device.wallCharger === 'לא בוצע') notDoneDevices++;
+            if (device.bag === 'בוצע') completedDevices++;
+            if (device.bag === 'אין') noNeededDevices++;
+            if (device.bag === 'לא בוצע') notDoneDevices++;
+            if (device.accessories.length > 0) completedDevices++;
+            if (device.accessories.length === 0) notDoneDevices++;
           });
+
           const progress = (completedDevices / totalDevices) * 100;
-          progressBar.textContent = `${completedDevices}/${totalDevices} (${Math.round(progress)}%)`;
+          progressBar.style.width = `${Math.round(progress)}%`;
+          progressBar.textContent = `${Math.round(progress)}%`;
+
+          // עדכון הסיכומים בטבלה
+          completedText.textContent = `בוצע: ${completedDevices}`;
+          noNeededText.textContent = `אין: ${noNeededDevices}`;
+          notDoneText.textContent = `——: ${notDoneDevices}`;
         })
         .catch(error => console.error(error));
     }
